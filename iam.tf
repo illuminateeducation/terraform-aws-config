@@ -39,9 +39,10 @@ JSON
   vars = {
     bucket_arn = format("arn:%s:s3:::%s", data.aws_partition.current.partition, var.config_logs_bucket)
     resource = format(
-      "arn:%s:s3:::%s/%s/AWSLogs/%s/Config/*",
+      "arn:%s:s3:::%s%s%s/AWSLogs/%s/Config/*",
       data.aws_partition.current.partition,
       var.config_logs_bucket,
+      var.config_logs_prefix == "" ? "" : "/",
       var.config_logs_prefix,
       data.aws_caller_identity.current.account_id,
     )
@@ -74,7 +75,7 @@ resource "aws_iam_role" "main" {
 
 resource "aws_iam_role_policy_attachment" "managed-policy" {
   role       = aws_iam_role.main.name
-  policy_arn = format("arn:%s:iam::aws:policy/service-role/AWSConfigRole", data.aws_partition.current.partition)
+  policy_arn = format("arn:%s:iam::aws:policy/service-role/AWS_ConfigRole", data.aws_partition.current.partition)
 }
 
 resource "aws_iam_policy" "aws-config-policy" {
